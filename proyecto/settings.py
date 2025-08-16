@@ -81,6 +81,12 @@ INSTALLED_APPS = [
     "guardian",
     # Aplicaciones
     "base.apps.BaseConfig",
+    "empresas.apps.EmpresasConfig",
+    "sucursales.apps.SucursalesConfig",
+    "puestos.apps.PuestosConfig",
+    "salarios.apps.SalariosConfig",
+    "incidencias.apps.IncidenciasConfig",
+    "contratos.apps.ContratosConfig",
 ]
 
 MIDDLEWARE = [

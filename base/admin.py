@@ -1,6 +1,7 @@
 from unfold.admin import ModelAdmin
 from django.contrib import admin
 from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
+
 # Register your models here.
 from .models import User
 from django.contrib.auth.models import Group
@@ -38,40 +39,59 @@ class UserAdmin(ModelAdmin):
         "is_superuser",
     )
     fieldsets = (
-        ("Datos Personales", {
-            "fields": (
-                "first_name",
-                "last_name",
-                "username",
-                "email",
-                # Agregar campos si es necesario
-            ), "classes": ("wide",)
-        }),
-        ("Permisos", {
-            "fields": (
-                "is_active",
-                "is_staff",
-                "is_superuser",
-            ), "classes": ("wide",)
-        }),
-        ("Asignación de grupos", {
-            "fields": (
-                "groups",
-            ), "classes": ("collapse",)
-        }),
-        ("Auditoria", {
-            "fields": (
-                "last_login",
-                "date_joined",
-            ), "classes": ("wide",)
-        }),
-        ("Seguridad", {
-            "fields": (
-                "user_permissions",
-                # Contraseña
-                "password",
-            ), "classes": ("wide",)
-        })
+        (
+            "Datos Personales",
+            {
+                "fields": (
+                    "first_name",
+                    "last_name",
+                    "username",
+                    "email",
+                    # Agregar campos si es necesario
+                ),
+                "classes": ("wide",),
+            },
+        ),
+        (
+            "Recursos Humanos",
+            {
+                "fields": ("puesto", "salario", "fecha_ingreso", "sucursal"),
+                "classes": ("wide",),
+            },
+        ),
+        (
+            "Permisos",
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                ),
+                "classes": ("wide",),
+            },
+        ),
+        ("Asignación de grupos", {"fields": ("groups",), "classes": ("collapse",)}),
+        (
+            "Auditoria",
+            {
+                "fields": (
+                    "last_login",
+                    "date_joined",
+                ),
+                "classes": ("wide",),
+            },
+        ),
+        (
+            "Seguridad",
+            {
+                "fields": (
+                    "user_permissions",
+                    # Contraseña
+                    "password",
+                ),
+                "classes": ("wide",),
+            },
+        ),
     )
 
 
