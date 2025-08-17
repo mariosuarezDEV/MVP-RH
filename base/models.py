@@ -20,6 +20,14 @@ class User(AbstractUser):
         "sucursales.SucursalModel", on_delete=models.PROTECT, null=True, blank=True
     )
 
+    def __str__(self):
+        # Mostrar el nombre completo si es que lo tiene, sino solo el nombre de usuario
+        return (
+            f"{self.first_name} {self.last_name}"
+            if self.first_name and self.last_name
+            else self.username
+        )
+
 
 class Base(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
