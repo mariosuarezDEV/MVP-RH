@@ -11,27 +11,27 @@
             <a class="nav-link" aria-current="page" href="{% url 'inicio' %}"><i class="fa-solid fa-house"></i> Inicio</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
+            <a class="nav-link" href="#"><i class="fa-solid fa-calendar-days"></i> Horario</a>
           </li>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Dropdown</a>
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa-solid fa-clipboard-list"></i> Incidencias</a>
             <ul class="dropdown-menu">
               <li>
-                <a class="dropdown-item" href="#">Action</a>
+                <a class="dropdown-item" href="#"><i class="fa-solid fa-list"></i> Ver Incidencias</a>
               </li>
               <li>
-                <a class="dropdown-item" href="#">Another action</a>
+                <a class="dropdown-item" href="{% url 'nueva_incidencia_simple' %}"><i class="fa-solid fa-plus"></i> Nueva Incidencia</a>
               </li>
               <li>
                 <hr class="dropdown-divider" />
               </li>
               <li>
-                <a class="dropdown-item" href="#">Something else here</a>
+                <a class="dropdown-item" href="#"><i class="fa-solid fa-clock"></i> Checador</a>
               </li>
             </ul>
           </li>
           <li class="nav-item">
-            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+            <a class="nav-link disabled" aria-disabled="true"><i class="fa-solid fa-gear"></i> Configuración</a>
           </li>
         </ul>
         <div class="d-flex">

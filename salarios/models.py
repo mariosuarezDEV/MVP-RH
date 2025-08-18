@@ -30,4 +30,8 @@ class SalarioModel(Base):
         db_table = "salarios"
 
     def __str__(self):
-        return str(self.monto)
+        return (
+            f" Puesto {self.puesto_asociado}"
+            if self.puesto_asociado
+            else f"Salario sin puesto"
+        )

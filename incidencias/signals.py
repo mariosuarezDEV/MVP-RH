@@ -30,7 +30,7 @@ def actualizar_bitacora(sender, instance, created, **kwargs):
             No incluyas texto adicional, ni explicaciones, ni símbolos.
 
             Datos del empleado:
-            - Salario quincenal: {instance.usuario.salario}
+            - Salario quincenal: {instance.usuario.salario.monto}
 
             Incidencia:
             {instance.incidencia.prompt}
