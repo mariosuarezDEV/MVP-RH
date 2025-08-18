@@ -5,7 +5,7 @@ from django.views.generic import CreateView
 from .models import BitacoraModel
 
 # Formularios
-from .forms import BitacoraForm
+
 
 # Mixins
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin

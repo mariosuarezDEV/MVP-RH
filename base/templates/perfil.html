@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load unicorn %}
+{% block contenido %}
+  <div class="row g-3">
+    <div class="col-md-5 col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title">Información del Usuario</h5>
+        </div>
+        <div class="card-body">
+          <h2 class="display-6">{{ empleado.get_full_name }}</h2>
+          <p class="text-muted">@{{ empleado.username }}</p>
+          <hr />
+          <p>
+            <b>Puesto:</b> {{ empleado.puesto }}
+          </p>
+          <p>
+            <b>Sucursal:</b> {{ empleado.sucursal.nombre }}
+          </p>
+        </div>
+        <div class="card-footer">
+          <a href="http://" class="btn btn-outline-primary"><i class="fa-solid fa-pen-to-square"></i> Cambiar información</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-7 col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title">Registrar incidencia</h5>
+        </div>
+        <div class="card-body"></div>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title">Ultimas Incidencias</h5>
+        </div>
+        <div class="card-body">
+          {% unicorn 'incidencias-empleado' usuario_id=empleado.id limite=5 %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
