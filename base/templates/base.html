@@ -22,6 +22,7 @@
     {% csrf_token %}
     {% include 'navbar.html' %}
     <div class="container my-4">
+      {% unicorn 'buscardor' %}
       {% include 'alertas.html' %}
       {% block contenido %}
 
