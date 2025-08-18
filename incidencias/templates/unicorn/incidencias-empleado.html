@@ -15,7 +15,15 @@
           <td>{{ incidencia.incidencia.nombre }}</td>
           <td>{{ incidencia.nota }}</td>
           <td>{{ incidencia.fecha_incidencia }}</td>
-          <td>{{ incidencia.estado }}</td>
+          <td>
+            {% if incidencia.estado == 'en_proceso' %}
+              <span class="badge bg-warning">En Proceso</span>
+            {% elif incidencia.estado == 'resuelta' %}
+              <span class="badge bg-success">Resuelta</span>
+            {% elif incidencia.estado == 'rechazada' %}
+              <span class="badge bg-danger">Rechazada</span>
+            {% endif %}
+          </td>
           <td>
             <div class="dropdown">
               <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Acciones</button>
