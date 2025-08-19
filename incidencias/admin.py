@@ -67,7 +67,14 @@ class IncidenciasAdmin(ModelAdmin):
 
 @admin.register(BitacoraModel)
 class BitacoraAdmin(ModelAdmin):
-    list_display = ("usuario", "incidencia", "monto", "estado", "fecha_incidencia")
+    list_display = (
+        "usuario",
+        "incidencia",
+        "salario__puesto_asociado",
+        "monto",
+        "estado",
+        "fecha_incidencia",
+    )
     search_fields = ("usuario__username", "incidencia__nombre", "estado")
     readonly_fields = ("created_at", "updated_at", "user_creacion", "user_modificacion")
     autocomplete_fields = ("usuario", "incidencia")

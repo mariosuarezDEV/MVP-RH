@@ -1,5 +1,8 @@
 <div class="">
-  <table class="table table-striped table-hover align-middle">
+  <table class="table table-striped table-hover align-middle caption-top">
+    <caption class="">
+      <a href="http://" class="btn btn-secondary"><i class="fa-solid fa-clock-rotate-left"></i> Ver todas las incidencias</a>
+    </caption>
     <thead>
       <tr>
         <th>Incidencia</th>
@@ -35,6 +38,9 @@
                   <a class="dropdown-item" href="#"><i class="fa-solid fa-xmark"></i> Rechazar</a>
                 </li>
                 <li>
+                  <a class="dropdown-item" href="#"><i class="fa-solid fa-pen-to-square"></i> Editar</a>
+                </li>
+                <li>
                   <a class="dropdown-item" href="#"><i class="fa-solid fa-info"></i> Ver detalles</a>
                 </li>
               </ul>
@@ -48,4 +54,10 @@
       {% endfor %}
     </tbody>
   </table>
+  <div class="btn btn-group">
+    <!-- Aceptar incidencias -->
+    <button class="btn btn-success"><i class="fa-solid fa-check"></i> Aceptar</button>
+    <!-- Rechazar incidencias -->
+    <button class="btn btn-danger"><i class="fa-solid fa-xmark"></i> Rechazar</button>
+  </div>
 </div>

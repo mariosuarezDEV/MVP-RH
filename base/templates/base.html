@@ -21,7 +21,7 @@
   <body>
     {% csrf_token %}
     {% include 'navbar.html' %}
-    <div class="container my-4">
+    <div class="container-fluid px-4 my-5">
       {% unicorn 'buscardor' %}
       {% include 'alertas.html' %}
       {% block contenido %}

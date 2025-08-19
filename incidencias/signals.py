@@ -24,13 +24,16 @@ def actualizar_bitacora(sender, instance, created, **kwargs):
         # Lógica para actualizar el estado de una bitacora
         # si el estado cambia a "resuelta", se calcula el monto de la incidencia
         if instance.estado == "resuelta":
+            salario_puesto_cubierto = (
+                instance.salario.monto if instance.salario else "No aplica"
+            )
             prompt = f"""
             Eres un sistema de cálculo de incidencias de nómina. 
             Debes devolver exclusivamente un número entero o decimal positivo que represente el monto de dinero asociado a la incidencia en pesos mexicanos. 
             No incluyas texto adicional, ni explicaciones, ni símbolos.
 
             Datos del empleado:
-            - Salario quincenal: {instance.usuario.salario.monto}
+            - Salario quincenal del empleado: {instance.usuario.salario.monto}
 
             Incidencia:
             {instance.incidencia.prompt}
@@ -38,26 +41,35 @@ def actualizar_bitacora(sender, instance, created, **kwargs):
             Detalles adicionales:
             - Nota: {instance.nota}
             - ¿Cubrió un puesto diferente?: {instance.cubre_puesto}
-            - Salario del puesto cubierto (si aplica): {instance.salario}
+            - Salario del puesto cubierto (si aplica): {salario_puesto_cubierto}
 
             Reglas de cálculo:
-            1. Todas las incidencias se calculan en proporción al salario quincenal del empleado:
-            - Un día adicional de trabajo → salario_quincenal / 15.
-            - Medio día → salario_quincenal / 30.
-            - Porcentajes u otros conceptos → aplicarlos sobre el salario_quincenal.
-            - Faltas o descuentos → se calculan igual que los pagos, pero siempre se devuelven en valor absoluto (positivo).
 
-            2. Si cubre un puesto diferente:
-            - Calcula la diferencia entre el salario quincenal del puesto cubierto y el salario quincenal del empleado.
-            - Si la diferencia es positiva, súmala al cálculo final.
-            - Si la diferencia es negativa o cero, ignórala (se mantiene el salario base del empleado).
+            PASO 1 - Determinar el salario base para el cálculo:
+            - Si NO cubre un puesto diferente (cubre_puesto = False): Usar el salario quincenal del empleado.
+            - Si SÍ cubre un puesto diferente (cubre_puesto = True): Usar el salario del puesto cubierto.
 
-            3. Si el empleado hace un turno extra cubriendo un puesto diferente:
-            - Calcula el monto del turno extra según la incidencia (ejemplo: un día adicional = salario_quincenal / 15).
-            - Calcula la diferencia de salario entre el puesto cubierto y el del empleado.
-            - El monto final es: diferencia_de_salario + monto_turno_extra.
+            PASO 2 - Calcular la incidencia:
+            Todas las incidencias se calculan sobre el salario determinado en el PASO 1:
+            - Un día adicional de trabajo → salario_base / 15
+            - Medio día → salario_base / 30
+            - Prima dominical (25%) → (salario_base / 15) * 1.25
+            - Porcentajes → aplicarlos sobre el salario_base
+            - Faltas o descuentos → calcular igual que los pagos, pero devolver en valor absoluto (positivo)
 
-            4. Siempre devuelve únicamente el número positivo resultante (ejemplo: 300, 150, 450.50).
+            Ejemplos:
+            - Empleado gana 3000 quincenales, cubre puesto de 4500 quincenales, prima dominical:
+              → Cálculo: (4500 / 15) * 1.25 = 300 * 1.25 = 375
+            
+            - Empleado gana 3000 quincenales, NO cubre otro puesto, prima dominical:
+              → Cálculo: (3000 / 15) * 1.25 = 200 * 1.25 = 250
+
+            - Empleado gana 2000 quincenales, cubre puesto de 3500 quincenales, día adicional:
+              → Cálculo: 3500 / 15 = 233.33
+
+            IMPORTANTE: Cuando se cubre un puesto diferente, TODOS los cálculos se basan únicamente en el salario del puesto cubierto, NO en el salario del empleado original.
+
+            Devuelve únicamente el número positivo resultante (ejemplo: 300, 150, 450.50).
             """
             completion = client.chat.completions.create(
                 model="openai/gpt-oss-20b",
@@ -67,7 +79,7 @@ def actualizar_bitacora(sender, instance, created, **kwargs):
                         "content": prompt,
                     }
                 ],
-                temperature=1,
+                temperature=0,
                 max_completion_tokens=8192,
                 top_p=1,
                 reasoning_effort="medium",
@@ -76,6 +88,7 @@ def actualizar_bitacora(sender, instance, created, **kwargs):
             )
             monto = completion.choices[0].message.content.strip()
             monto = float(monto) if monto else 0
+            monto = round(monto, 2)
             # Actualizar sin disparar señal
             BitacoraModel.objects.filter(pk=instance.pk).update(monto=monto)
         elif instance.estado == "rechazada":

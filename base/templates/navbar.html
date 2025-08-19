@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load unicorn %}
 <nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top shadow mb-4">
   <div class="container-fluid">
     <a class="navbar-brand" href="{% url 'inicio' %}">Flor Catorce - RH</a>
@@ -34,7 +35,7 @@
             <a class="nav-link disabled" aria-disabled="true"><i class="fa-solid fa-gear"></i> Configuración</a>
           </li>
         </ul>
-        <div class="d-flex">
+        <div class="d-flex gap-3">
           <!-- Acciones de la cuenta del usuario -->
           {% url 'account_email' as email_url_ %}
           {% url 'account_change_password' as change_password_url_ %}
