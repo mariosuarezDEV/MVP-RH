@@ -2,7 +2,8 @@
 {% load crispy_forms_tags %}
 {% load unicorn %}
 <!DOCTYPE html>
-<html lang="es">
+<!-- tema oscuro -->
+<html lang="es" data-bs-theme="light">
   <head>
     {% unicorn_scripts %}
     {% bootstrap_css %}
@@ -18,7 +19,7 @@
       {% endblock %}
     </title>
   </head>
-  <body>
+  <body class="bg-body-tertiary">
     {% csrf_token %}
     {% include 'navbar.html' %}
     <div class="container-fluid px-4 my-5">

@@ -54,55 +54,6 @@
               </div>
             </div>
           </div>
-          <h3 class="mt-4 fs-2">Ultimas incidencias</h3>
-          <div class="col-12 table-responsive text-center">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Empleado</th>
-                  <th>Incidencia</th>
-                  <th>Nota</th>
-                  <th>Fecha</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for incidencia in incidencias %}
-                  <tr>
-                    <td>{{ incidencia.usuario.get_full_name|default:incidencia.usuario.username }}</td>
-                    <td>{{ incidencia.incidencia.nombre }}</td>
-                    <td>{{ incidencia.nota }}</td>
-                    <td>{{ incidencia.fecha_incidencia }}</td>
-                    <td>
-                      <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Acciones</button>
-                        <ul class="dropdown-menu">
-                          <li>
-                            <a class="dropdown-item" href="#">Ver</a>
-                          </li>
-                          <li>
-                            <a class="dropdown-item" href="#">Editar</a>
-                          </li>
-                          <!-- Divicion -->
-                          <li>
-                            <hr class="dropdown-divider" />
-                          </li>
-                          <li>
-                            <a class="dropdown-item" href="#">Aceptar</a>
-                            <a class="dropdown-item" href="#">Rechazar</a>
-                          </li>
-                        </ul>
-                      </div>
-                    </td>
-                  </tr>
-                {% empty %}
-                  <tr>
-                    <td colspan="5" class="text-center">No hay incidencias en proceso.</td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
         </div>
       </div>
     </div>

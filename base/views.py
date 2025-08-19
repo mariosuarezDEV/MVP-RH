@@ -33,3 +33,10 @@ class PerfilView(LoginRequiredMixin, DetailView):
     template_name = "perfil.html"
     model = User
     context_object_name = "empleado"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["incidencias"] = BitacoraModel.objects.filter(
+            usuario=self.object, estado="en_proceso"
+        ).order_by("-fecha_incidencia")[:10]
+        return context

@@ -32,6 +32,7 @@ urlpatterns = [
     path("martor/", include("martor.urls")),
     path("", include("base.urls")),
     path("sentry-debug/", trigger_error),
+    path("incidencias/", include("incidencias.urls")),
 ]
 
 if settings.DEBUG:

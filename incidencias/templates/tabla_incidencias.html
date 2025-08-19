@@ -1,0 +1,59 @@
+<div class="">
+  <table class="table align-middle table-striped table-hover caption-top">
+    <caption>Nota: Solo se estan mostrando las ultimas {{ incidencias|length }} incidencias del empleado</caption>
+    <thead>
+      <tr>
+        <th>Incidencia</th>
+        <th>Nota</th>
+        <th>Fecha</th>
+        <th>Estado</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for incidencia in incidencias %}
+        <tr>
+          <td>{{ incidencia.incidencia.nombre }}</td>
+          <td>{{ incidencia.nota }}</td>
+          <td>{{ incidencia.fecha_incidencia }}</td>
+          <td>
+            {% if incidencia.estado == 'en_proceso' %}
+              <span class="badge text-bg-warning">Sin revisar</span>
+            {% elif incidencia.estado == 'resuelta' %}
+              <span class="badge text-bg-success">Resuelta</span>
+            {% elif incidencia.estado == 'rechazada' %}
+              <span class="badge text-bg-danger">Rechazada</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Acciones</button>
+              <ul class="dropdown-menu">
+                <li>
+                  <a class="dropdown-item" href="{% url 'aceptar_incidencia' pk=incidencia.id %}"><i class="fa-solid fa-check"></i> Aceptar <span class="badge text-bg-secondary"><i class="fa-solid fa-robot"></i> IA</span></a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="{% url 'rechazar_incidencia' pk=incidencia.id %}"><i class="fa-solid fa-xmark"></i> Rechazar</a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="{% url 'editar_incidencia' pk=incidencia.id %}"><i class="fa-solid fa-pen-to-square"></i> Editar</a>
+                </li>
+                <li>
+                  <hr class="dropdown-divider" />
+                </li>
+                <li>
+                  <a class="dropdown-item disabled" href="{% url 'informacion_incidencia' pk=incidencia.id %}"><i class="fa-solid fa-circle-info"></i> Más información <span class="badge text-bg-secondary"><i class="fa-solid fa-robot"></i> IA</span></a>
+                </li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="4" class="text-center">No hay incidencias registradas para este empleado.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <a href="{% url 'historial_incidencias' empleado_id=empleado.id %}" class="btn btn-dark"><i class="fa-solid fa-clock-rotate-left"></i> Ver el historial completo</a>
+</div>

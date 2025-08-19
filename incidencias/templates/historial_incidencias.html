@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block contenido %}
+  <div class="card">
+    <div class="card-body">
+      <h1 class="fs-1 fw-bold">Historial de incidencias</h1>
+      {% include 'tabla_incidencias.html' with incidencias=incidencias empleado=empleado %}
+    </div>
+  </div>
+{% endblock %}

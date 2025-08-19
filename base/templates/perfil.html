@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% load unicorn %}
 {% block contenido %}
   <div class="row g-3">
     <div class="col-lg-4 col-12">
@@ -26,7 +25,7 @@
           </table>
           <div class="btn-group">
             <a href="" class="btn btn-outline-primary"><i class="fa-solid fa-pen-to-square"></i> Editar</a>
-            <a href="" class="btn btn-outline-success"><i class="fa-solid fa-plus"></i> Nueva incidencia</a>
+            <a href="{% url 'nueva_incidencia' empleado.id %}" class="btn btn-outline-success"><i class="fa-solid fa-plus"></i> Nueva incidencia</a>
             <a href="" class="btn btn-outline-dark"><i class="fa-solid fa-dollar-sign"></i> Calcular nomina</a>
           </div>
         </div>
@@ -35,8 +34,8 @@
     <div class="col-lg-8 col-12">
       <div class="card">
         <div class="card-body">
-          <h5 class="display-5 text-center">Registro de incidencias</h5>
-          {% unicorn 'incidencias-empleado' usuario_id=empleado.id limite=10 %}
+          <h5 class="fs-1 fw-bold mb-3">Registro de incidencias</h5>
+          {% include 'tabla_incidencias.html' with incidencias=incidencias empleado=empleado %}
         </div>
       </div>
     </div>
