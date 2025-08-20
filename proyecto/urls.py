@@ -33,6 +33,7 @@ urlpatterns = [
     path("", include("base.urls")),
     path("sentry-debug/", trigger_error),
     path("incidencias/", include("incidencias.urls")),
+    path("horarios/", include("horarios.urls")),
 ]
 
 if settings.DEBUG:

@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body table-responsive">
+          <h1 class="fs-1 fw-bold">Lista de incidencias</h1>
+          <table class="table table-striped table-hover">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Usuario</th>
+                <th>Incidencia</th>
+                <th>Nota</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for incidencia in incidencias %}
+                <tr>
+                  <td>{{ incidencia.id }}</td>
+                  <td>{{ incidencia.usuario.get_full_name }}</td>
+                  <td>{{ incidencia.incidencia.nombre }}</td>
+                  <td>{{ incidencia.nota }}</td>
+                  <td>{{ incidencia.fecha_incidencia }}</td>
+                  <td>
+                    {% if incidencia.estado == 'en_proceso' %}
+                      <span class="badge text-bg-warning">Sin revisar</span>
+                    {% elif incidencia.estado == 'resuelta' %}
+                      <span class="badge text-bg-success">Resuelta</span>
+                    {% elif incidencia.estado == 'rechazada' %}
+                      <span class="badge text-bg-danger">Rechazada</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Acciones</button>
+                      <ul class="dropdown-menu">
+                        <li>
+                          <a class="dropdown-item" href="{% url 'aceptar_incidencia' pk=incidencia.id %}"><i class="fa-solid fa-check"></i> Aceptar <span class="badge text-bg-secondary"><i class="fa-solid fa-robot"></i> IA</span></a>
+                        </li>
+                        <li>
+                          <a class="dropdown-item" href="{% url 'rechazar_incidencia' pk=incidencia.id %}"><i class="fa-solid fa-xmark"></i> Rechazar</a>
+                        </li>
+                        <li>
+                          <a class="dropdown-item" href="{% url 'editar_incidencia' pk=incidencia.id %}"><i class="fa-solid fa-pen-to-square"></i> Editar</a>
+                        </li>
+                        <li>
+                          <hr class="dropdown-divider" />
+                        </li>
+                        <li>
+                          <a class="dropdown-item disabled" href="{% url 'informacion_incidencia' pk=incidencia.id %}"><i class="fa-solid fa-circle-info"></i> Más información <span class="badge text-bg-secondary"><i class="fa-solid fa-robot"></i> IA</span></a>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="7" class="text-center">No hay incidencias registradas.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% if is_paginated %}
+            <div class="pagination">
+              <span class="my-2">{{ page_obj.paginator.count }} incidencias en total</span>
+            </div>
+
+            <nav aria-label="Page navigation example">
+              <ul class="pagination">
+                <!-- Primera pagina -->
+                {% if page_obj.has_previous %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page=1">Primera</a>
+                  </li>
+                {% endif %}
+                <!-- Anterior -->
+                {% if page_obj.has_previous %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}"><i class="fa-solid fa-arrow-left"></i></a>
+                  </li>
+                {% endif %}
+                <!-- Números de página -->
+                {% for num in page_obj.paginator.page_range %}
+                  {% if page_obj.number == num %}
+                    <!-- Pagina actual -->
+                    <li class="page-item active">
+                      <a class="page-link">{{ num }}</a>
+                    </li>
+                  {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                      <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                  {% endif %}
+                {% endfor %}
+                <!-- Página siguiente -->
+                {% if page_obj.has_next %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}"><i class="fa-solid fa-arrow-right"></i></a>
+                  </li>
+                {% endif %}
+                <!-- Última página -->
+                {% if page_obj.has_next %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Última</a>
+                  </li>
+                {% endif %}
+              </ul>
+            </nav>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

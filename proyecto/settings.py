@@ -87,6 +87,7 @@ INSTALLED_APPS = [
     "salarios.apps.SalariosConfig",
     "incidencias.apps.IncidenciasConfig",
     "contratos.apps.ContratosConfig",
+    "horarios.apps.HorariosConfig",
 ]
 
 MIDDLEWARE = [

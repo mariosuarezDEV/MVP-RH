@@ -18,10 +18,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 
 # Shortcuts
 from django.urls import reverse_lazy
+from django.shortcuts import redirect
 
 # Otros
 from django.contrib.auth import get_user_model
 from django.contrib import messages
+from django.utils.safestring import mark_safe
+
 
 User = get_user_model()
 
@@ -62,7 +65,10 @@ class AceptarIncidenciaView(LoginRequiredMixin, PermissionRequiredMixin, Redirec
         incidencia.user_modificacion = self.request.user
         incidencia.save()
         messages.success(self.request, "La incidencia fue resuelta.")
-        return reverse_lazy("perfil", kwargs={"pk": incidencia.usuario.id})
+        # Regresar a la página anterior y sino regresar al perfil del empleado
+        return self.request.META.get(
+            "HTTP_REFERER", reverse_lazy("perfil", kwargs={"pk": incidencia.usuario.id})
+        )
 
 
 class RechazarIncidenciaView(LoginRequiredMixin, PermissionRequiredMixin, RedirectView):
@@ -74,7 +80,10 @@ class RechazarIncidenciaView(LoginRequiredMixin, PermissionRequiredMixin, Redire
         incidencia.user_modificacion = self.request.user
         incidencia.save()
         messages.success(self.request, "La incidencia fue rechazada.")
-        return reverse_lazy("perfil", kwargs={"pk": incidencia.usuario.id})
+        # Regresar a la página anterior y sino regresar al perfil del empleado
+        return self.request.META.get(
+            "HTTP_REFERER", reverse_lazy("perfil", kwargs={"pk": incidencia.usuario.id})
+        )
 
 
 class EditarIncidenciaView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
@@ -82,6 +91,20 @@ class EditarIncidenciaView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVi
     model = BitacoraModel
     template_name = "editar_incidencia.html"
     form_class = NuevaIncidenciaForm
+
+    def dispatch(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        if self.object.estado != "en_proceso":
+            mensaje = f"La incidencia <strong>{self.object.incidencia.nombre}</strong> de <strong>{self.object.usuario.get_full_name()}</strong> no puede ser modificada despues de haber sido resuelta o rechazada."
+            messages.error(request, mark_safe(mensaje))
+            # CORRECCIÓN: Usar redirect() en lugar de retornar una URL string
+            referer = request.META.get("HTTP_REFERER")
+            if referer:
+                return redirect(referer)
+            else:
+                return redirect("perfil", pk=self.object.usuario.id)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse_lazy("perfil", kwargs={"pk": self.object.usuario.id})
@@ -125,3 +148,14 @@ class HistorialIncidenciasView(LoginRequiredMixin, PermissionRequiredMixin, List
         return BitacoraModel.objects.filter(
             usuario=self.kwargs.get("empleado_id")
         ).order_by("-fecha_incidencia")
+
+
+class IncidenciasView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    permission_required = "incidencias.view_bitacoramodel"
+    model = BitacoraModel
+    context_object_name = "incidencias"
+    template_name = "incidencias.html"
+    paginate_by = 10
+
+    def get_queryset(self):
+        return BitacoraModel.objects.all().order_by("-fecha_incidencia")

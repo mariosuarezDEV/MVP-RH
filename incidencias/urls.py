@@ -6,9 +6,11 @@ from .views import (
     EditarIncidenciaView,
     InformacionIncidenciaView,
     HistorialIncidenciasView,
+    IncidenciasView,
 )
 
 urlpatterns = [
+    path("", IncidenciasView.as_view(), name="lista_incidencias"),
     path(
         "nueva/<int:empleado_id>/",
         NuevaIncidenciaView.as_view(),

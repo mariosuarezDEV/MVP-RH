@@ -19,7 +19,13 @@
               <tr>
                 <td>{{ empleado.puesto }}</td>
                 <td>{{ empleado.sucursal.nombre }}</td>
-                <td>{{ empleado.activo|yesno:'Sí,No' }}</td>
+                <td>
+                  {% if activo %}
+                    Trabajando en {{ sucursal }}
+                  {% else %}
+                    Fuera de turno
+                  {% endif %}
+                </td>
               </tr>
             </tbody>
           </table>

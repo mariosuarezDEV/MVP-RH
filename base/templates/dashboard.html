@@ -13,14 +13,20 @@
               <tr>
                 <th>Puesto</th>
                 <th>Sucursal</th>
-                <th>Activo</th>
+                <th>Estado</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>{{ empleado.puesto }}</td>
                 <td>{{ empleado.sucursal.nombre }}</td>
-                <td>{{ empleado.activo|yesno:'Sí,No' }}</td>
+                <td>
+                  {% if activo %}
+                    Trabajando en {{ sucursal }}
+                  {% else %}
+                    Fuera de turno
+                  {% endif %}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -50,9 +56,41 @@
             <div class="card text-bg-secondary text-center">
               <div class="card-body">
                 <h5 class="">Empleados activos</h5>
-                <p class="display-2">24</p>
+                <p class="display-2">{{ empleados|length }}</p>
               </div>
             </div>
+          </div>
+          <div class="col-12">
+            <!-- Lista de los primeros 5 empleados en turno -->
+            <h5 class="fs-1 fw-bold">Empleados en turno</h5>
+            <table class="table table-hover table-striped align-middle">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Empleado</th>
+                  <th>Puesto</th>
+                  <th>Sucursal</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for empleado in empleados|slice:':5' %}
+                  <tr>
+                    <td>
+                      <img src="https://robohash.org/empleado/{{ empleado.id }}" alt="hash" class="img-thumbnail rounded-circle" style="width: 60px;" />
+                    </td>
+                    <td>
+                      <a href="{% url 'perfil' empleado.id %}">{{ empleado.get_full_name }}</a>
+                    </td>
+                    <td>{{ empleado.puesto }}</td>
+                    <td>{{ empleado.sucursal.nombre }}</td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="3" class="text-center">No hay empleados en turno.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
