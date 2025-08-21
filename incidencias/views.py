@@ -97,12 +97,16 @@ class EditarIncidenciaView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVi
     form_class = NuevaIncidenciaForm
 
     def dispatch(self, request, *args, **kwargs):
-        self.object = self.get_object()
+        self.object = (
+            BitacoraModel.objects.filter(id=self.kwargs.get("pk"))
+            .select_related("usuario", "incidencia", "salario")
+            .first()
+        )
 
         if self.object.estado != "en_proceso":
             mensaje = f"La incidencia <strong>{self.object.incidencia.nombre}</strong> de <strong>{self.object.usuario.get_full_name()}</strong> no puede ser modificada despues de haber sido resuelta o rechazada."
             messages.error(request, mark_safe(mensaje))
-            # CORRECCIÓN: Usar redirect() en lugar de retornar una URL string
+            # Usar redirect() en lugar de retornar una URL string
             referer = request.META.get("HTTP_REFERER")
             if referer:
                 return redirect(referer)
