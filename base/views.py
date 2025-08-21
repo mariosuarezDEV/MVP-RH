@@ -32,21 +32,22 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             estado="en_proceso"
         ).order_by("-fecha_incidencia")[:5]
         plantilla = obtener_plantilla()
-        filtro = plantilla.empleados.filter(id=self.request.user.id)
-        if filtro:
-            print(f"El empleado esta en turno")
-            context["sucursal"] = plantilla.sucursal.nombre
-            context["activo"] = True
-        else:
-            print(f"El empleado no esta en turno")
-            context["activo"] = False
-        plantilla_completa = obtener_plantilla()
-        empleados = plantilla_completa.empleados.all()[:6] if plantilla_completa else []
-        context["empleados"] = empleados
+        if plantilla != None:
+            filtro = plantilla.empleados.filter(
+                id=self.request.user.id
+            )  # buscar al empleado en la plantilla
+            if filtro:
+                context["sucursal"] = plantilla.sucursal.nombre
+                context["activo"] = True
+            plantilla_completa = obtener_plantilla()
+            empleados = (
+                plantilla_completa.empleados.all()[:6] if plantilla_completa else []
+            )
+            context["empleados"] = empleados
         # Cumpleaños
         context["cumpleanos"] = [
             empleado
-            for empleado in empleados
+            for empleado in User.objects.all()
             if empleado.nacimiento and empleado.nacimiento.month == timezone.now().month
         ]
 
@@ -64,10 +65,16 @@ class PerfilView(LoginRequiredMixin, DetailView):
             usuario=self.object, estado="en_proceso"
         ).order_by("-fecha_incidencia")[:10]
         plantilla = obtener_plantilla()
-        filtro = plantilla.empleados.filter(id=self.object.id)
-        if filtro:
-            context["sucursal"] = plantilla.sucursal.nombre
-            context["activo"] = True
-        else:
-            context["activo"] = False
+        if plantilla != None:
+            filtro = plantilla.empleados.filter(
+                id=self.object.id
+            )  # buscar al empleado en la plantilla
+            if filtro:
+                context["sucursal"] = plantilla.sucursal.nombre
+                context["activo"] = True
+            plantilla_completa = obtener_plantilla()
+            empleados = (
+                plantilla_completa.empleados.all()[:6] if plantilla_completa else []
+            )
+            context["empleados"] = empleados
         return context
