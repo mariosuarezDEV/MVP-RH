@@ -1,15 +1,17 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView, DetailView
+from django.views.generic import TemplateView, DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
 from incidencias.models import BitacoraModel
 from horarios.models import TurnosModel, PlantillaModel
 from django.utils import timezone
 from horarios.views import obtener_plantilla
+from django.urls import reverse_lazy
 
 User = get_user_model()
 
 from incidencias.models import BitacoraModel
+from .forms import BiografiaForm
 
 
 class HomeView(TemplateView):
@@ -28,7 +30,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context["empleado"] = self.request.user
         context["incidencias"] = BitacoraModel.objects.filter(
             estado="en_proceso"
-        ).order_by("-fecha_incidencia")[:10]
+        ).order_by("-fecha_incidencia")[:5]
         plantilla = obtener_plantilla()
         filtro = plantilla.empleados.filter(id=self.request.user.id)
         if filtro:

@@ -67,7 +67,7 @@
               <thead>
                 <tr>
                   <th></th>
-                  <th>Empleado</th>
+                  <th>Nombre</th>
                   <th>Puesto</th>
                   <th>Sucursal</th>
                 </tr>
@@ -101,11 +101,60 @@
                   <strong>{{ empleado.get_full_name }}</strong> cumpleaños el día {{ empleado.nacimiento|date:'d' }}
                 </li>
               {% empty %}
-                <li class="list-group-item">No hay cumpleaños este mes.</li>
+                <li class="list-group-item">
+                  <!-- Alerta de cumpleaños -->
+                  <div class="alert alert-info" role="alert">No hay cumpleaños este mes.</div>
+                </li>
               {% endfor %}
             </ul>
           </div>
           <!-- Incidencias sin revisar -->
+          <h5 class="col-12 fs-1 fw-bold">Incidencias recientes</h5>
+          {% for incidencia in incidencias %}
+            <div class="col-12">
+              <div class="card">
+                <div class="card-body align-middle">
+                  <div class="d-flex align-items-center gap-3">
+                    <img src="https://robohash.org/empleado/{{ incidencia.usuario.id }}" alt="hash" class="img-thumbnail rounded-circle" style="width: 60px;" />
+                    <div>
+                      <h5 class="card-title">{{ incidencia.usuario.get_full_name }}</h5>
+                      <p class="card-text">{{ incidencia.incidencia.nombre }}</p>
+                    </div>
+                  </div>
+                  <hr />
+                  <h6 class="card-subtitle mb-2 text-muted">Detalles de la incidencia</h6>
+
+                  {% if incidencia.nota %}
+                    <p class="card-text">
+                      <strong>Nota:</strong> {{ incidencia.nota }}
+                    </p>
+                  {% else %}
+                    <p class="card-text">No hay notas para esta incidencia.</p>
+                  {% endif %}
+                  <p class="card-text">
+                    <strong>¿Cubrio un puesto?</strong> {{ incidencia.cubre_puesto|yesno:'🟢,🔴' }}
+                  </p>
+
+                  {% if incidencia.cubre_puesto %}
+                    <p class="card-text">
+                      <strong>Puesto que se cubrió:</strong> {{ incidencia.salario.puesto_asociado.nombre }}
+                    </p>
+                  {% endif %}
+                  <small class="text-muted">{{ incidencia.fecha_incidencia|date:'d/m/Y' }} - Creada por {{ incidencia.user_creacion.get_full_name }}</small>
+                  <div class="btn btn-group col-12">
+                    <a href="{% url 'aceptar_incidencia' incidencia.id %}" class="btn btn-outline-success"><i class="fa-solid fa-heart"></i> Aceptar incidencia</a>
+                    <a href="{% url 'rechazar_incidencia' incidencia.id %}" class="btn btn-outline-danger"><i class="fa-solid fa-heart-crack"></i> Rechazar incidencia</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% empty %}
+            <div class="col-12">
+              <div class="alert alert-info" role="alert">
+                Estas al día <i class="fa-solid fa-face-smile-wink"></i>.
+              </div>
+            </div>
+          {% endfor %}
         </div>
       </div>
     </div>

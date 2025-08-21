@@ -271,6 +271,9 @@ MARTOR_TOOLBAR_BUTTONS = [
     "help",
 ]
 
+MARTOR_ENABLE_ADMIN_CSS = True
+
+
 # Celery
 CELERY_BROKER_URL = "redis://redis:6379/0"  # Broker principal
 CELERY_RESULT_BACKEND = "redis://redis:6379/0"  # Guardar resultados

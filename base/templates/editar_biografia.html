@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+  <form method="POST">
+    {% csrf_token %}
+
+    <div class="mb-3">
+      {{ form.biografia.label_tag }}
+      {{ form.biografia }}
+      <small class="form-text text-muted">Puedes usar Markdown: **negrita**, *cursiva*, etc.</small>
+      {% if form.biografia.errors %}
+        <div class="text-danger">{{ form.biografia.errors }}</div>
+      {% endif %}
+    </div>
+
+    <input type="submit" value="Guardar cambios" class="btn btn-primary" />
+  </form>
+
+  <!-- SIN {{ form.media }} - No cargamos nada de Martor -->
+{% endblock %}
