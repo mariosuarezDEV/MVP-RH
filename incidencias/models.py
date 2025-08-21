@@ -132,6 +132,11 @@ class BitacoraModel(Base):
         verbose_name = "Bitácora"
         verbose_name_plural = "Bitácoras"
         db_table = "bitacoras"
+        indexes = [
+            models.Index(
+                fields=["estado", "-fecha_incidencia"], name="idx_estado_fecha"
+            ),
+        ]
 
     def __str__(self):
         return f"Bitácora de {self.usuario} - {self.incidencia} - {self.estado}"
