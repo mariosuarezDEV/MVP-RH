@@ -45,6 +45,7 @@ class PlantillaModel(Base):
         related_name="%(class)s_plantillas",
         help_text="Sucursal donde se trabaja",
         verbose_name="Sucursal",
+        db_index=True,
     )
     dia = models.DateField(
         blank=False,
@@ -58,12 +59,14 @@ class PlantillaModel(Base):
         related_name="plantillas",
         help_text="Turno de trabajo",
         verbose_name="Turno",
+        db_index=True,
     )
     empleados = models.ManyToManyField(
         User,
         related_name="plantillas",
         help_text="Empleados asignados",
         verbose_name="Empleados",
+        db_index=True,
     )
 
     class Meta:

@@ -33,6 +33,7 @@ class IncidenciasModel(Base):
         null=False,
         verbose_name="Tipo de Incidencia",
         help_text="Tipo de incidencia a la que pertenece",
+        db_index=True,
     )
     nombre = models.CharField(
         max_length=100,
@@ -81,6 +82,7 @@ class BitacoraModel(Base):
         null=False,
         verbose_name="Incidencia",
         help_text="Incidencia que se trata",
+        db_index=True,
     )
     nota = models.TextField(
         blank=True,
@@ -126,6 +128,7 @@ class BitacoraModel(Base):
         null=True,
         verbose_name="Puesto/Salario objetivo",
         help_text="Salario diferente al habitual si es que aplica",
+        db_index=True,
     )
 
     class Meta:

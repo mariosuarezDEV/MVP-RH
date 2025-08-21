@@ -144,8 +144,8 @@
                   {% endif %}
                   <small class="text-muted">{{ incidencia.fecha_incidencia|date:'d/m/Y' }} - Creada por {{ incidencia.user_creacion.get_full_name }}</small>
                   <div class="btn btn-group col-12">
-                    <a href="{% url 'aceptar_incidencia' incidencia.id %}" class="btn btn-outline-success"><i class="fa-solid fa-heart"></i> Aceptar incidencia</a>
-                    <a href="{% url 'rechazar_incidencia' incidencia.id %}" class="btn btn-outline-danger"><i class="fa-solid fa-heart-crack"></i> Rechazar incidencia</a>
+                    <a href="{% url 'aceptar_incidencia' incidencia.id %}" class="btn btn-outline-success"><i class="fa-solid fa-thumbs-up"></i> Aceptar incidencia</a>
+                    <a href="{% url 'rechazar_incidencia' incidencia.id %}" class="btn btn-outline-danger"><i class="fa-solid fa-thumbs-down"></i> Rechazar incidencia</a>
                   </div>
                 </div>
               </div>

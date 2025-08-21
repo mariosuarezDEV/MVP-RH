@@ -12,7 +12,7 @@ from django.views.generic import (
 from .models import TurnosModel, PlantillaModel
 
 # Formularios
-
+from .forms import PlantillaForm
 
 # Mixins
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -80,8 +80,42 @@ class PlantillaActualView(LoginRequiredMixin, PermissionRequiredMixin, TemplateV
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user = self.request.user
+        user = (
+            User.objects.filter(id=self.request.user.id)
+            .select_related("sucursal", "puesto", "salario")
+            .first()
+        )
         plantilla = obtener_plantilla(user.sucursal)
-        empleados = plantilla.empleados.all() if plantilla else []
+        empleados = list(
+            plantilla.empleados.all().select_related("sucursal", "puesto", "salario")
+            if plantilla
+            else []
+        )
         context["empleados"] = empleados
         return context
+
+
+class CrearPlantillaView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    permission_required = "horarios.add_plantillamodel"
+    # Pasar la sucursal del usuario logueado
+    form_class = PlantillaForm
+    template_name = "crear_plantilla.html"
+
+    def get_success_url(self):
+        return self.request.META.get("HTTP_REFERER", reverse_lazy("inicio"))
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["sucursal"] = self.request.user.sucursal
+        return kwargs
+
+    def form_valid(self, form):
+        form.instance.sucursal = self.request.user.sucursal
+        form.instance.user_creacion = self.request.user
+        form.instance.user_modificacion = self.request.user
+        # Mensaje
+        messages.success(
+            self.request,
+            f"Tu horario del dia {form.instance.dia} se subió correctamente para el turno {form.instance.turno.nombre}.",
+        )
+        return super().form_valid(form)

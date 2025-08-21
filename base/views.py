@@ -124,13 +124,14 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 class PerfilView(LoginRequiredMixin, DetailView):
     template_name = "perfil.html"
     model = User
-    context_object_name = "empleado"  # self.object
+    context_object_name = "empleado"
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("sucursal", "salario", "puesto")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         plantilla = obtener_plantilla()
-        # Información del empleado
-        context.update(self._get_informacion_empleado())
         # Turno de empleado
         if plantilla:
             context.update(self._get_detalles_turno(plantilla))
@@ -140,29 +141,20 @@ class PerfilView(LoginRequiredMixin, DetailView):
         context.update(self._get_incidencias_empleado())
         return context
 
-    def _get_informacion_empleado(self):
-        """Obtener información detallada del empleado con select_related y almacenarlo en caché"""
-        cache_key = f"informacion_empleado_{self.object.id}"
-        informacion_empleado = cache.get(cache_key)
-        if not informacion_empleado:
-            informacion_empleado = {
-                "empleado": User.objects.filter(id=self.object.id)
-                .select_related("sucursal", "puesto")
-                .first()
-            }
-            cache.set(
-                cache_key, informacion_empleado, 60 * 15
-            )  # Almacenar en caché por 15 minutos
-        return informacion_empleado
-
     def _get_incidencias_empleado(self):
         """Obtener las incidencias del empleado con select_related"""
-        return {
-            "incidencias": BitacoraModel.objects.filter(
-                usuario=self.object, estado="en_proceso"
+        incidencias = (
+            BitacoraModel.objects.filter(usuario=self.object, estado="en_proceso")
+            .select_related(
+                "usuario",
+                "incidencia",
+                "incidencia__tipo",
+                "salario",
             )
-            .select_related("usuario", "incidencia", "salario")
             .order_by("-fecha_incidencia")[:10]
+        )
+        return {
+            "incidencias": list(incidencias),
         }
 
     def _get_detalles_turno(self, plantilla):
@@ -176,5 +168,4 @@ class PerfilView(LoginRequiredMixin, DetailView):
                     "activo": True,
                 }
             )
-        context["empleados"] = plantilla.empleados.all()[:6]
         return context

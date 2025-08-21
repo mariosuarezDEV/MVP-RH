@@ -141,13 +141,29 @@ class HistorialIncidenciasView(LoginRequiredMixin, PermissionRequiredMixin, List
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["empleado"] = User.objects.get(id=self.kwargs.get("empleado_id"))
+        context["empleado"] = (
+            User.objects.filter(id=self.kwargs.get("empleado_id"))
+            .select_related("sucursal", "puesto", "salario")
+            .first()
+        )
         return context
 
     def get_queryset(self):
-        return BitacoraModel.objects.filter(
-            usuario=self.kwargs.get("empleado_id")
-        ).order_by("-fecha_incidencia")
+        incidencias = (
+            BitacoraModel.objects.filter(usuario=self.kwargs.get("empleado_id"))
+            .select_related(
+                "incidencia",
+                "incidencia__tipo",
+                "usuario",
+                "usuario__sucursal",
+                "usuario__puesto",
+                "usuario__salario",
+                "user_creacion",
+                "user_modificacion",
+            )
+            .order_by("-fecha_incidencia")
+        )
+        return list(incidencias)
 
 
 class IncidenciasView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
@@ -158,4 +174,13 @@ class IncidenciasView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return BitacoraModel.objects.all().order_by("-fecha_incidencia")
+        return list(
+            BitacoraModel.objects.all()
+            .select_related(
+                "usuario",
+                "incidencia",
+                "incidencia__tipo",
+                "salario",
+            )
+            .order_by("-fecha_incidencia")
+        )
