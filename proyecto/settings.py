@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     "django_unicorn",
     "djmoney",
     "martor",
+    "debug_toolbar",
     # Seguridad
     "allauth",
     "allauth.account",
@@ -91,6 +92,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # Debug Toolbar
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     # WhiteNoise
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -359,5 +362,28 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# Debug
+INTERNAL_IPS = [
+    "127.0.0.1",
+    "localhost",
+]
+
+DEBUG_TOOLBAR_PANELS = [
+    "debug_toolbar.panels.history.HistoryPanel",
+    "debug_toolbar.panels.versions.VersionsPanel",
+    "debug_toolbar.panels.timer.TimerPanel",
+    "debug_toolbar.panels.settings.SettingsPanel",
+    "debug_toolbar.panels.headers.HeadersPanel",
+    "debug_toolbar.panels.request.RequestPanel",
+    "debug_toolbar.panels.sql.SQLPanel",
+    "debug_toolbar.panels.staticfiles.StaticFilesPanel",
+    "debug_toolbar.panels.templates.TemplatesPanel",
+    "debug_toolbar.panels.alerts.AlertsPanel",
+    "debug_toolbar.panels.cache.CachePanel",
+    "debug_toolbar.panels.signals.SignalsPanel",
+    "debug_toolbar.panels.redirects.RedirectsPanel",
+    "debug_toolbar.panels.profiling.ProfilingPanel",
+]
 
 # daphne -b 0.0.0.0 -p 8000 proyecto.asgi:application
