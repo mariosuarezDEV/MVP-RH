@@ -43,7 +43,11 @@ class NuevaIncidenciaView(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["empleado"] = User.objects.get(id=self.kwargs.get("empleado_id"))
+        context["empleado"] = (
+            User.objects.filter(id=self.kwargs.get("empleado_id"))
+            .select_related("sucursal", "puesto", "salario")
+            .first()
+        )
         return context
 
     def form_valid(self, form):
