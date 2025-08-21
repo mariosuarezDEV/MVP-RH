@@ -79,6 +79,8 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                     "incidencia__tipo",
                     "salario__puesto_asociado",
                     "salario",
+                    "user_creacion",
+                    "user_modificacion",
                 )
                 .order_by("-fecha_incidencia")[:5]
             )
