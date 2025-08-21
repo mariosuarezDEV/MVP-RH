@@ -1,7 +1,7 @@
 <div class="card my-2">
   <div class="card-body">
     <div class="input-group mb-3">
-      <input type="text" class="form-control" placeholder="Nombre de usuario..." aria-label="Nombre de usuario..." aria-describedby="btn-buscar" unicorn:model="nombre" unicorn:keyup.enter="buscar" />
+      <input type="text" class="form-control" placeholder="Nombre de usuario..." aria-label="Nombre de usuario..." aria-describedby="btn-buscar" unicorn:model="nombre" />
       <button class="btn btn-outline-success" type="button" id="btn-buscar" unicorn:click="buscar"><i class="fa-solid fa-magnifying-glass"></i> Buscar</button>
     </div>
 
@@ -20,8 +20,11 @@
               <td>
                 <a href="{% url 'perfil' empleado.pk %}">{{ empleado.get_full_name }}</a>
               </td>
-              <td>{{ empleado.puesto.nombre }}</td>
-              <td>{{ empleado.sucursal.nombre }}</td>
+
+              {% with puesto=empleado.puesto sucursal=empleado.sucursal %}
+                <td>{{ puesto.nombre }}</td>
+                <td>{{ sucursal.nombre }}</td>
+              {% endwith %}
             </tr>
           {% empty %}
             <tr>

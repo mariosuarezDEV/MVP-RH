@@ -9,6 +9,7 @@ from horarios.views import obtener_plantilla
 from django.urls import reverse_lazy
 from django.db.models import Count, Case, When, IntegerField, Q
 from django.core.cache import cache
+from django.db import connection
 
 User = get_user_model()
 
@@ -28,7 +29,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         # Optimizacion de consultas
         usuario_login = (
             User.objects.filter(id=self.request.user.id)
-            .select_related("sucursal", "puesto")
+            .select_related("sucursal", "puesto", "salario")
             .first()
         )
         plantilla = obtener_plantilla()
@@ -56,7 +57,6 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                     "empleados": [],
                 }
             )
-
         return context
 
     def _get_estadisticas_dashboard(self):
@@ -69,9 +69,19 @@ class DashboardView(LoginRequiredMixin, TemplateView):
     def _get_incidencias_recientes(self):
         """Obtiene las incidencias recientes para el dashboard."""
         return {
-            "incidencias": BitacoraModel.objects.filter(estado="en_proceso")
-            .select_related("usuario", "incidencia", "salario")
-            .order_by("-fecha_incidencia")[:5]
+            "incidencias": list(
+                BitacoraModel.objects.filter(estado="en_proceso")
+                .select_related(
+                    "usuario",
+                    "usuario__sucursal",
+                    "usuario__puesto",
+                    "incidencia",
+                    "incidencia__tipo",
+                    "salario__puesto_asociado",
+                    "salario",
+                )
+                .order_by("-fecha_incidencia")[:5]
+            )
         }
 
     def _get_festivos(self):
@@ -80,16 +90,22 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         festivos_cache_key = f"cumpleanos_mes_{mes_actual}"
         cumpleanos = cache.get(festivos_cache_key)
         if not cumpleanos:
-            cumpleanos = User.objects.filter(
-                nacimiento__month=mes_actual, nacimiento__isnull=False
-            ).order_by("nacimiento__day")
+            cumpleanos = (
+                User.objects.filter(
+                    nacimiento__month=mes_actual, nacimiento__isnull=False
+                )
+                .select_related("sucursal", "puesto")
+                .order_by("nacimiento__day")
+            )
             cache.set(festivos_cache_key, cumpleanos, 60 * 15)
         return cumpleanos
 
     def _get_horario_detalles(self, plantilla, usuario_login):
         """Obtiene los detalles del horario del usuario actual."""
         context = {"sucursal": None, "empleados": [], "activo": False}
-        usuario_en_plantilla = plantilla.empleados.filter(id=usuario_login.id).exists()
+        usuario_en_plantilla = plantilla.empleados.filter(
+            id=usuario_login.id
+        ).exists()  # Una consulta
         if usuario_en_plantilla:
             context.update(
                 {
@@ -97,7 +113,9 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                     "activo": True,
                 }
             )
-        context["empleados"] = plantilla.empleados.all()[:6]
+        context["empleados"] = list(
+            plantilla.empleados.all().select_related("sucursal", "puesto")[:6]
+        )  # Una consulta
         return context
 
 

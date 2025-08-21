@@ -18,8 +18,10 @@
             </thead>
             <tbody>
               <tr>
-                <td>{{ empleado.puesto }}</td>
-                <td>{{ empleado.sucursal.nombre }}</td>
+                {% with puesto=empleado.puesto sucursal=empleado.sucursal %}
+                  <td>{{ puesto }}</td>
+                  <td>{{ sucursal.nombre }}</td>
+                {% endwith %}
                 <td>
                   {% if activo %}
                     Trabajando en {{ sucursal }}

@@ -13,11 +13,13 @@ class BuscardorView(UnicornView):
     def buscar(self):
         self.mostrar_resultados = True
         if self.nombre != "":
-            self.empleados = User.objects.filter(
-                Q(first_name__icontains=self.nombre)
-                | Q(last_name__icontains=self.nombre)
-                | Q(username__icontains=self.nombre)
-            )[:5]
+            self.empleados = list(
+                User.objects.filter(
+                    Q(first_name__icontains=self.nombre)
+                    | Q(last_name__icontains=self.nombre)
+                    | Q(username__icontains=self.nombre)
+                ).select_related("puesto", "sucursal", "salario")[:5]
+            )
         else:
             self.mostrar_resultados = False
             self.empleados = []

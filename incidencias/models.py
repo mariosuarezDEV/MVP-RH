@@ -72,6 +72,7 @@ class BitacoraModel(Base):
         null=False,
         verbose_name="Usuario",
         help_text="Usuario al que se le aplica la incidencia",
+        db_index=True,
     )
     incidencia = models.ForeignKey(
         IncidenciasModel,
@@ -100,6 +101,7 @@ class BitacoraModel(Base):
     fecha_incidencia = models.DateField(
         verbose_name="Fecha de Incidencia",
         help_text="Fecha en que se registró la incidencia",
+        db_index=True,
     )
     estado = models.CharField(
         max_length=20,
@@ -107,6 +109,7 @@ class BitacoraModel(Base):
         default="en_proceso",
         verbose_name="Estado",
         help_text="Estado actual de la incidencia",
+        db_index=True,
     )
     # Detalles
     cubre_puesto = models.BooleanField(
