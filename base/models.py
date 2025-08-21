@@ -19,6 +19,12 @@ class User(AbstractUser):
     sucursal = models.ForeignKey(
         "sucursales.SucursalModel", on_delete=models.PROTECT, null=True, blank=True
     )
+    nacimiento = models.DateField(
+        blank=True,
+        null=True,
+        help_text="Fecha de nacimiento",
+        verbose_name="Fecha de nacimiento",
+    )
 
     def __str__(self):
         # Mostrar el nombre completo si es que lo tiene, sino solo el nombre de usuario

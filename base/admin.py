@@ -45,6 +45,7 @@ class UserAdmin(ModelAdmin):
                 "fields": (
                     "first_name",
                     "last_name",
+                    "nacimiento",
                     "username",
                     "email",
                     # Agregar campos si es necesario

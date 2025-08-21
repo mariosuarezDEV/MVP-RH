@@ -73,7 +73,7 @@
                 </tr>
               </thead>
               <tbody>
-                {% for empleado in empleados|slice:':5' %}
+                {% for empleado in empleados|slice:':6' %}
                   <tr>
                     <td>
                       <img src="https://robohash.org/empleado/{{ empleado.id }}" alt="hash" class="img-thumbnail rounded-circle" style="width: 60px;" />
@@ -92,6 +92,20 @@
               </tbody>
             </table>
           </div>
+          <!-- Cumpleaños del mes -->
+          <div class="col-12">
+            <h5 class="fs-1 fw-bold">Cumpleaños del mes 🎉</h5>
+            <ul class="list-group">
+              {% for empleado in cumpleanos %}
+                <li class="list-group-item">
+                  <strong>{{ empleado.get_full_name }}</strong> cumpleaños el día {{ empleado.nacimiento|date:'d' }}
+                </li>
+              {% empty %}
+                <li class="list-group-item">No hay cumpleaños este mes.</li>
+              {% endfor %}
+            </ul>
+          </div>
+          <!-- Incidencias sin revisar -->
         </div>
       </div>
     </div>

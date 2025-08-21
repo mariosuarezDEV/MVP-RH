@@ -39,12 +39,14 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             print(f"El empleado no esta en turno")
             context["activo"] = False
         plantilla_completa = obtener_plantilla()
-        empleados = (
-            plantilla_completa.empleados.all().order_by("?")
-            if plantilla_completa
-            else []
-        )
+        empleados = plantilla_completa.empleados.all()[:6] if plantilla_completa else []
         context["empleados"] = empleados
+        # Cumpleaños
+        context["cumpleanos"] = [
+            empleado
+            for empleado in empleados
+            if empleado.nacimiento and empleado.nacimiento.month == timezone.now().month
+        ]
 
         return context
 
