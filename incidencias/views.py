@@ -95,31 +95,39 @@ class EditarIncidenciaView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVi
     model = BitacoraModel
     template_name = "editar_incidencia.html"
     form_class = NuevaIncidenciaForm
+    # Cache del objeto para evitar consultas duplicadas
+    _object_cache = None
+
+    def get_object(self, queryset=None):
+        """Sobrescribir get_object para optimizar consultas y cachear el resultado"""
+        if self._object_cache is None:
+            self._object_cache = (
+                BitacoraModel.objects.filter(id=self.kwargs.get("pk"))
+                .select_related("usuario", "incidencia", "salario")
+                .first()
+            )
+        return self._object_cache
 
     def dispatch(self, request, *args, **kwargs):
-        self.object = (
-            BitacoraModel.objects.filter(id=self.kwargs.get("pk"))
-            .select_related("usuario", "incidencia", "salario")
-            .first()
-        )
-
-        if self.object.estado != "en_proceso":
-            mensaje = f"La incidencia <strong>{self.object.incidencia.nombre}</strong> de <strong>{self.object.usuario.get_full_name()}</strong> no puede ser modificada despues de haber sido resuelta o rechazada."
+        obj = self.get_object()  # Obtener el objeto de la incidencia
+        if obj.estado != "en_proceso":
+            mensaje = f"La incidencia <strong>{obj.incidencia.nombre}</strong> de <strong>{obj.usuario.get_full_name()}</strong> no puede ser modificada despues de haber sido resuelta o rechazada."
             messages.error(request, mark_safe(mensaje))
             # Usar redirect() en lugar de retornar una URL string
             referer = request.META.get("HTTP_REFERER")
             if referer:
                 return redirect(referer)
             else:
-                return redirect("perfil", pk=self.object.usuario.id)
+                return redirect("perfil", pk=obj.usuario.id)
         return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
-        return reverse_lazy("perfil", kwargs={"pk": self.object.usuario.id})
+        return reverse_lazy("perfil", kwargs={"pk": self.get_object().usuario.id})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["incidencia"] = self.object
+        # Asegurar que 'incidencia' esté disponible en el template
+        context["incidencia"] = self.get_object()
         return context
 
     def form_valid(self, form):
