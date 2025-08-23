@@ -19,7 +19,7 @@ urlpatterns = [
         "eliminar/<int:pk>/", EliminarPlantillaView.as_view(), name="eliminar_plantilla"
     ),
     path("editar/<int:pk>/", EditarPlantillaView.as_view(), name="editar_plantilla"),
-    path("crear/", CrearPlantillaWizard.as_view(), name="crear_plantilla_wizard"),
+    path("agregar/", CrearPlantillaWizard.as_view(), name="crear_plantilla_wizard"),
     path(
         "actualizar/<int:pk>/",
         EditarPlantillaWizard.as_view(),
