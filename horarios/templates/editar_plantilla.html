@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block contenido %}
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <h1 class="display-3">Modifica la plantilla de {{ form.instance.sucursal.nombre }}</h1>
+          <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Aplicar cambios</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

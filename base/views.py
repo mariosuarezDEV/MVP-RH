@@ -32,7 +32,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             .select_related("sucursal", "puesto", "salario")
             .first()
         )
-        plantilla = obtener_plantilla()
+        plantilla = obtener_plantilla(usuario=usuario_login)
 
         # Consultas optimizadas (Información básica de dashboard)
         estadisticas = self._get_estadisticas_dashboard()
@@ -131,7 +131,7 @@ class PerfilView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        plantilla = obtener_plantilla()
+        plantilla = obtener_plantilla(usuario=self.object)
         # Turno de empleado
         if plantilla:
             context.update(self._get_detalles_turno(plantilla))
