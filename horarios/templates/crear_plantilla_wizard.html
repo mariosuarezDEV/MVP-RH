@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block contenido %}
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="display-3">
+            {% if wizard.steps.current == '0' %}
+              Información de día y turno
+            {% elif wizard.steps.current == '1' %}
+              Empleados de Sucursal {{ user.sucursal.nombre }}
+            {% elif wizard.steps.current == '2' %}
+              Empleados de otras sucursales
+            {% endif %}
+          </h5>
+          <form method="post">
+            {% csrf_token %}
+            {{ wizard.management_form }}
+            {{ wizard.form|crispy }}
+            <div class="">
+              {% if wizard.steps.prev %}
+                <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Anterior</button>
+              {% endif %}
+
+              <button type="submit" class="btn btn-primary">
+                {% if wizard.steps.current == wizard.steps.last %}
+                  <i class="fa-solid fa-floppy-disk"></i> Finalizar
+                {% else %}
+                  <i class="fa-solid fa-arrow-right"></i> Siguiente
+                {% endif %}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

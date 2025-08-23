@@ -13,14 +13,20 @@ from django.views.generic import (
 from .models import TurnosModel, PlantillaModel
 
 # Formularios
-from .forms import PlantillaForm
+from .forms import (
+    PlantillaForm,
+    DiaTurnoForm,
+    EmpleadosSucursalForm,
+    OtrosEmpleadosForm,
+)
+from formtools.wizard.views import SessionWizardView
 
 # Mixins
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 # Shortcuts
 from django.urls import reverse_lazy
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 
 # Otros
 from django.contrib.auth import get_user_model
@@ -209,3 +215,101 @@ class EditarPlantillaView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
             f"Tu horario del dia {form.instance.dia} se actualizo correctamente para el turno {form.instance.turno.nombre}.",
         )
         return super().form_valid(form)
+
+
+class CrearPlantillaWizard(SessionWizardView):
+    form_list = [
+        ("0", DiaTurnoForm),
+        ("1", EmpleadosSucursalForm),
+        ("2", OtrosEmpleadosForm),
+    ]
+    template_name = "crear_plantilla_wizard.html"
+
+    def get_form_kwargs(self, step=None):
+        """Pasar la sucursal del usuario a los formularios de empleados"""
+        kwargs = super().get_form_kwargs(step)
+        if step in ["1", "2"]:
+            kwargs["sucursal"] = self.request.user.sucursal_id
+        return kwargs
+
+    def done(self, form_list, **kwargs):
+        # Aquí puedes procesar los datos de todos los formularios
+        # y crear la plantilla en la base de datos
+        turno = form_list[0]
+        empleados_suc = form_list[1]
+        otros_empleados = form_list[2]
+        # Crear la plantilla
+        plantilla = PlantillaModel.objects.create(
+            sucursal=self.request.user.sucursal,
+            dia=turno.cleaned_data["dia"],
+            turno=turno.cleaned_data["turno"],
+            user_creacion=self.request.user,
+            user_modificacion=self.request.user,
+        )
+        # Agregar empleados a la plantilla
+        empleados_sucursal = empleados_suc.cleaned_data["empleados"]
+        otros = otros_empleados.cleaned_data["otros_empleados"]
+        plantilla.empleados.add(*empleados_sucursal, *otros)
+        # Mensaje de exito
+        messages.success(self.request, "Plantilla creada correctamente.")
+        return redirect("ver_plantillas")
+
+
+class EditarPlantillaWizard(SessionWizardView):
+    form_list = [
+        ("0", DiaTurnoForm),
+        ("1", EmpleadosSucursalForm),
+        ("2", OtrosEmpleadosForm),
+    ]
+    template_name = "crear_plantilla_wizard.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        """Cargar la plantilla a editar antes de procesar cualquier paso"""
+        self.plantilla = get_object_or_404(PlantillaModel, pk=self.kwargs.get("pk"))
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self, step=None):
+        """Pasar la sucursal a los formularios de empleados"""
+        kwargs = super().get_form_kwargs(step)
+        if step in ["1", "2"]:
+            kwargs["sucursal"] = self.request.user.sucursal_id
+        return kwargs
+
+    def get_form_initial(self, step):
+        """Inicializar los formularios con los datos existentes"""
+        if step == "0":  # Dia y turno
+            return {
+                "dia": self.plantilla.dia,
+                "turno": self.plantilla.turno,
+            }
+        elif step == "1":  # Empleados de la sucursal
+            empleados_sucursal = self.plantilla.empleados.filter(
+                sucursal_id=self.request.user.sucursal_id
+            )
+            return {"empleados": empleados_sucursal}
+        elif step == "2":  # Otros empleados
+            otros_empleados = self.plantilla.empleados.exclude(
+                sucursal_id=self.request.user.sucursal_id
+            )
+            return {"otros_empleados": otros_empleados}
+        return {}
+
+    def done(self, form_list, **kwargs):
+        # Actualizar datos generales
+        turno = form_list[0]
+        empleados_suc = form_list[1]
+        otros_empleados = form_list[2]
+
+        self.plantilla.dia = turno.cleaned_data["dia"]
+        self.plantilla.turno = turno.cleaned_data["turno"]
+        self.plantilla.user_modificacion = self.request.user
+        self.plantilla.save()
+
+        # Actualizar empleados
+        empleados_sucursal = empleados_suc.cleaned_data["empleados"]
+        otros = otros_empleados.cleaned_data["otros_empleados"]
+        self.plantilla.empleados.set(list(empleados_sucursal) + list(otros))
+
+        # Mensaje de éxito
+        messages.success(self.request, "Plantilla actualizada correctamente.")
+        return redirect("ver_plantillas")
