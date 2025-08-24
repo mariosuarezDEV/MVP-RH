@@ -13,6 +13,7 @@ class SucursalModel(Base):
         help_text="Seleccione la empresa a la que pertenece esta sucursal",
         null=False,
         blank=False,
+        db_index=True,
     )
     nombre = models.CharField(
         max_length=100,

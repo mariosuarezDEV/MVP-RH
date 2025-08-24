@@ -28,6 +28,7 @@ class SucursalAdmin(ModelAdmin):
                     "updated_at",
                     "user_creacion",
                     "user_modificacion",
+                    "active",
                 )
             },
         ),

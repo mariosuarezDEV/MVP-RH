@@ -22,6 +22,7 @@ class EmpresaAdmin(ModelAdmin):
                     "updated_at",
                     "user_creacion",
                     "user_modificacion",
+                    "active",
                 ),
                 "classes": ("collapse",),
             },
