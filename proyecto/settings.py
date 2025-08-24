@@ -134,7 +134,16 @@ ASGI_APPLICATION = "proyecto.asgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {"default": env.db()}
+DATABASES = {
+    "default": {
+        **env.db(),
+        # Configuraciones de PostgreSQL para mejor rendimiento
+        "init_command": "SET default_transaction_isolation='read committed'",
+        # Configuraciones de Django para el pool de conexiones
+        "CONN_MAX_AGE": 60 * 5,  # Mantiene conexiones abiertas por 5 minutos
+        "CONN_HEALTH_CHECKS": True,  # Verifica la salud de las conexiones
+    },
+}
 
 
 # Password validation
@@ -300,9 +309,47 @@ CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": env("REDIS_URL", default="redis://redis:6379/1"),
-        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            # Compresor para la caché (uso de memoria)
+            "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+            "CONNECTION_POOL_KWARGS": {
+                "max_connections": 15,
+                "retry_on_timeout": True,  # Reintentar en caso de timeout
+                "socket_timeout": 5,  # Timeout por operación
+                "socket_connect_timeout": 5,  # Timeout para conectar
+                "health_check_interval": 30,  # Verificar conexiones cada 30s
+            },
+        },
+    },
+    "sessions": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": env(
+            "REDIS_URL", default="redis://redis:6379/2"
+        ),  # Base de datos diferente
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+            "CONNECTION_POOL_KWARGS": {
+                "max_connections": 15,  # Menos conexiones para sesiones
+                "retry_on_timeout": True,
+                "socket_timeout": 3,  # Timeout más agresivo para sesiones
+                "socket_connect_timeout": 3,
+            },
+        },
     },
 }
+
+# Configurar Redis como backend de sesiones
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "sessions"
+SESSION_SAVE_EVERY_REQUEST = False  # Mejorado: solo guardar cuando cambie
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Mejorado: no expirar al cerrar navegador
+
+# Configuraciones adicionales de sesión
+SESSION_COOKIE_AGE = 86400  # 24 horas en segundos
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 # Logs
 
