@@ -28,6 +28,6 @@ RUN chmod 0644 /etc/cron.d/cron_jobs \
     && crontab /etc/cron.d/cron_jobs
 
 # Mantener contenedor en ejecución
-CMD ["sh", "-c", "cron && tail -f /workspace/cron.log"]
+CMD ["cron", "-f"]
 
 
