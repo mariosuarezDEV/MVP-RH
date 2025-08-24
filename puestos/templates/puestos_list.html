@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block contenido %}
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="fs-1 fw-bold">Lista de Puestos</h5>
+          <table class="table table-striped table-hover caption-top">
+            <caption>
+              <a href="{% url 'crear_puesto' %}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Nuevo Puesto</a>
+            </caption>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for puesto in puestos %}
+                <tr>
+                  <td>{{ puesto.id }}</td>
+                  <td>{{ puesto.nombre }}</td>
+                  <td>{{ puesto.descripcion }}</td>
+                  <td>
+                    <div class="dropdown">
+                      <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Acciones</button>
+                      <ul class="dropdown-menu">
+                        <li>
+                          <a class="dropdown-item" href="{% url 'editar_puesto' puesto.id %}"><i class="fa-solid fa-pen-to-square"></i> Editar</a>
+                        </li>
+                        <li>
+                          <a class="dropdown-item" href="{% url 'eliminar_puesto' puesto.id %}"><i class="fa-solid fa-trash"></i> Eliminar</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
