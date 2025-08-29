@@ -301,13 +301,6 @@ Configurado para capturar:
 
 Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
 
-## 🆘 Soporte
-
-Para soporte técnico:
-- 📧 Email: soporte@tuempresa.com
-- 📋 Issues: [GitHub Issues](link-to-issues)
-- 📚 Documentación: [Wiki del Proyecto](link-to-wiki)
-
 ## 🎖️ Agradecimientos
 
 - Django Community
