@@ -1,17 +1,13 @@
-from django.shortcuts import render
 from django.views.generic import TemplateView, DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth import get_user_model
 from incidencias.models import BitacoraModel
 from django.utils import timezone
 from horarios.views import obtener_plantilla
-from django.urls import reverse_lazy
 from django.db.models import Count, Q
 from django.core.cache import cache
 
 User = get_user_model()
-
-from incidencias.models import BitacoraModel
 
 
 class HomeView(TemplateView):
@@ -57,7 +53,6 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         return context
 
     def _get_estadisticas_dashboard(self):
-
         estadisticas = BitacoraModel.objects.aggregate(
             total_incidencias=Count("id", filter=Q(estado="en_proceso")),
         )

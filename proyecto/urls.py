@@ -37,6 +37,7 @@ urlpatterns = [
     path("empresas/", include("empresas.urls")),
     path("sucursales/", include("sucursales.urls")),
     path("puestos/", include("puestos.urls")),
+    path("api-auth/", include("rest_framework.urls")),
 ]
 
 if settings.DEBUG:
